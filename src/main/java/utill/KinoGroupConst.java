@@ -37,7 +37,7 @@ public static final String SHOW_ALL_USERS="showAllUsers";
 public static final String CHECKBOX_WITH_INDICATION_ACCESS="checkboxWithAccess";
 public static final int ADMIN_ROLE=1;
 public static final int DEFAULT_ROLE=0;
-public static final int DEFAULT_LANGUAGE_ID=1;
+public static final int DEFAULT_LANGUAGE_ID=2;
 
 public static final String PERSONAL_AREA="/PersonalArea";
 public static final String SHOW_ALL_GOODS="/showAllGoods";

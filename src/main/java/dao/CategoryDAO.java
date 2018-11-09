@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CategoryDAO {
-    final private String SHOW_DEFAULT_CATEGORY = "SELECT category_id,category_name FROM category WHERE language_id=1";
+    final private String SHOW_DEFAULT_CATEGORY = "SELECT category_id,category_name FROM category WHERE language_id=2";
     final private String SHOW_CATEGORY_BY_LANGUAGE_ID = "SELECT category_id,category_name FROM category WHERE language_id=?";
     final private String SHOW_CLOTHES_CATEGORY = "SELECT * FROM category WHERE category_id>1 AND language_id=?";
     private ConnectonPooll connectonPooll = ConnectonPooll.getInstance();
