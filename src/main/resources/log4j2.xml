@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="debug" name="RoutingTest" packages="org.apache.logging.log4j.test">
+    <Properties>
+        <Property name="siteLogFileName">${catalina.base}/logs/log4j.log</Property>
+    </Properties>
+    <Appenders>
+        <File name="SiteLogFile" fileName="${siteLogFileName}">
+            <PatternLayout>
+                <Pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</Pattern>
+            </PatternLayout>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Root level="all">
+            <AppenderRef ref="SiteLogFile"/>
+        </Root>
+    </Loggers>
+</Configuration>
