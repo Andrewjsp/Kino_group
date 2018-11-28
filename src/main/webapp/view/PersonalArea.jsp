@@ -15,7 +15,7 @@
 <fmt:message key="balance" bundle="${bundle}"/> : ${sessionScope.User.balance} </br>
 
 <div align="right">
-    <a href="/Exit"> <fmt:message key="signOut" bundle="${bundle}"/></a>
+    <a href="/view/Exit"> <fmt:message key="signOut" bundle="${bundle}"/></a>
 </div>
 
 <div>

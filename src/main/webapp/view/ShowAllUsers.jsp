@@ -17,7 +17,7 @@
     </tr>
     <c:forEach var="user" items="${showAllUsers}">
         <c:if test="${user.userId ne sessionScope.User.userId}">
-<form action="/DeleteUser" method="post">
+<form action="/view/DeleteUser" method="post">
     <tr>
         <td>${user.userLogin}</td>
         <c:if test="${user.userRole eq 1}">
@@ -30,7 +30,7 @@
         <td><button type="submit"><fmt:message key="delete" bundle="${bundle}"/></button></td>
 
 </form>
-    <form action="changeUserRole" method="post">
+    <form action="/view/changeUserRole" method="post">
         <input type="hidden" name="userId" value="${user.userId}"/>
         <input type="hidden" name="userLogin" value="${user.userLogin}"/>
         <input type="hidden" name="userRole" value="${user.userRole}"/>
@@ -43,6 +43,9 @@
 </table>
 <div align="left">
     <a href="/view/Welcome.jsp"><fmt:message key="goMainPage" bundle="${bundle}"/> </a>
+</div>
+<div align="right">
+    <a href="/view/Exit"> <fmt:message key="signOut" bundle="${bundle}"/></a>
 </div>
 </body>
 </html>

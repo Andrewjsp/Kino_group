@@ -22,7 +22,7 @@
 
         </tr>
         <c:forEach var="good" items="${showAllGoods}">
-        <form action="/deleteGood" method="post">
+        <form action="/view/deleteGood" method="post">
             <tr>
                 <input type="hidden" name="productId" value="${good.productId}"/>
                 <td> ${good.productId} </td>
@@ -37,6 +37,9 @@
             </tr>
         </c:forEach>
     </table>
+<div align="right">
+    <a href="/view/Exit"> <fmt:message key="signOut" bundle="${bundle}"/></a>
+</div>
 <div align="right">
     <a href="/view/Welcome.jsp"> <fmt:message key="goMainPage" bundle="${bundle}"/> </a>
 </div>

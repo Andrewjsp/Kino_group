@@ -23,7 +23,7 @@
         <td><b><fmt:message key="addInBasket" bundle="${bundle}"/></b></td>
     </tr>
         <c:forEach var="Goods" items="${Good}">
-        <form action="/AddProductInBasket" method="post">
+        <form action="/view/AddProductInBasket" method="post">
             <tr>
                 <td>${Goods.productName}</td>
                 <input type="hidden" name="productId" value="${Goods.productId}"/>
@@ -39,10 +39,6 @@
         </form>
         </c:forEach>
 </table>
-
-
-
-
 </body>
 </html>
 

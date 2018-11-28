@@ -13,7 +13,7 @@
 </div>
 <div align="center">
     <h3><fmt:message key="formClothes" bundle="${bundle}"/></h3>
-    <form action="AddProduct" method="post" accept-charset="UTF-8">
+    <form action="/view/AddProduct" method="post" accept-charset="UTF-8">
         <fmt:message key="enterNameProduct" bundle="${bundle}"/> <input type="text" name="productName"/></br>
         <fmt:message key="enterDiscriptionProduct" bundle="${bundle}"/> <input type="text" name="description"/></br>
         <fmt:message key="enterPriceProduct" bundle="${bundle}"/> <input type="text" name="productPrice"/></br>
@@ -44,7 +44,7 @@
     </form>
 </div>
 <h3><fmt:message key="formAlbum" bundle="${bundle}"/></h3>
-<form action="AddProduct" method="post">
+<form action="/view/AddProduct" method="post">
     <fmt:message key="enterNameAlbum" bundle="${bundle}"/> <input type="text" name="productName"/></br>
     <fmt:message key="enterDescriptionAlbum" bundle="${bundle}"/> <input type="text" name="description"/></br>
     <fmt:message key="enterPriceAlbum" bundle="${bundle}"/> <input type="text" name="productPrice"/></br>
@@ -55,7 +55,7 @@
 
 
 <h3><fmt:message key="formMusic" bundle="${bundle}"/></h3>
-<form action="AddProduct" method="post" accept-charset="UTF-8">
+<form action="/view/AddProduct" method="post" accept-charset="UTF-8">
     <fmt:message key="enterNameMusic" bundle="${bundle}"/> <input type="text" name="productName"/> </br>
     <fmt:message key="enterDiscriptionMusic" bundle="${bundle}"/> <input type="text" name="description"/> </br>
     <fmt:message key="enterPriceMusic" bundle="${bundle}"/> <input type="text" name="productPrice"/> </br>
@@ -67,6 +67,9 @@
         <input type="submit" value="<fmt:message key="send" bundle="${bundle}"/>"/>
     </select>
 </form>
+<div align="right">
+    <a href="/view/Exit"> <fmt:message key="signOut" bundle="${bundle}"/></a>
+</div>
 <h4><a href="/view/Welcome.jsp"><fmt:message key="goMainPage" bundle="${bundle}"/></a></h4>
 </body>
 </html>

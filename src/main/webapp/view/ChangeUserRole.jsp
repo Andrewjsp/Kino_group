@@ -15,7 +15,7 @@ Id<fmt:message key="user" bundle="${bundle}"/> ${editUser.userId}
 <fmt:message key="login" bundle="${bundle}"/> ${editUser.userLogin}
 
 <c:if test="${editUser.userRole eq 0}">
-    <form action="/changeRole" method="post">
+    <form action="/view/changeRole" method="post">
         <input type="checkbox" name="checkboxWithAccess" value="allow"/> <fmt:message key="makeAdmin" bundle="${bundle}"/> </br>
         <input type="hidden" name="userId" value="${editUser.userId}"/>
         <input type="hidden" name="userRole" value="${editUser.userRole}"/>
@@ -25,13 +25,16 @@ Id<fmt:message key="user" bundle="${bundle}"/> ${editUser.userId}
 
 
 <c:if test="${editUser.userRole eq 1}">
-    <form action="/changeRole" method="post">
+    <form action="/view/changeRole" method="post">
         <input type="checkbox" name="checkboxWithAccess" value="allow"/><fmt:message key="makeUser" bundle="${bundle}"/> </br>
         <input type="hidden" name="userId" value="${editUser.userId}"/>
         <input type="hidden" name="userRole" value="${editUser.userRole}"/>
         <input type="submit" value="<fmt:message key="save" bundle="${bundle}"/>"/>
     </form>
 </c:if>
+<div align="right">
+    <a href="/view/Exit"> <fmt:message key="signOut" bundle="${bundle}"/></a>
+</div>
 <a href="/view/Welcome.jsp"> <fmt:message key="goMainPage" bundle="${bundle}"/> </a>
 </body>
 </html>

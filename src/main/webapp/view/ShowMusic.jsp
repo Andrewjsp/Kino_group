@@ -25,7 +25,7 @@
     </tr>
     <c:forEach var="Music" items="${music}">
         <tr>
-            <form action="/AddProductInBasket" method="post">
+            <form action="/view/AddProductInBasket" method="post">
                 <td>${Music.productName}</td>
                 <td>${Music.productPrice}</td>
                 <td>${Music.description}</td>

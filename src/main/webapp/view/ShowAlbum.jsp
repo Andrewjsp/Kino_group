@@ -26,9 +26,9 @@
 
     <c:forEach var="Goods" items="${Good}">
         <tr>
-            <form action="/AddProductInBasket" method="post">
+            <form action="/view/AddProductInBasket" method="post">
                 <input type="hidden" name="productId" value="${Goods.productId}"/>
-                <td><a href="/ShowMusic?albumId=${Goods.productId}">${Goods.productName}</a></td>
+                <td><a href="/view/ShowMusic?albumId=${Goods.productId}">${Goods.productName}</a></td>
                 <input type="hidden" name="productName" value="${Goods.productName}"/>
                 <td><input type="hidden" name="productPrice" value="${Goods.productPrice}"/>${Goods.productPrice}</td>
                 <td>${Goods.description}</td>
@@ -39,5 +39,6 @@
         </tr>
     </c:forEach>
 </table>
+
 </body>
 </html>

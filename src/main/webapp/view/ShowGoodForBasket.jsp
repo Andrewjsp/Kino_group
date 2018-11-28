@@ -25,7 +25,7 @@
         </tr>
         <c:forEach var="basket" items="${goodsForBasket}">
           <tr>
-            <form action="/DeleteGoodInBasket" method="post">
+            <form action="/view/DeleteGoodInBasket" method="post">
                 <td>${basket.goodName}</td>
                 <td>${basket.goodPrice}</td>
                 <input type="hidden" name="orderId" value="${basket.orderId}"/>
@@ -36,11 +36,14 @@
         </c:forEach>
     </table>
 
-        <form action="/BuyGood" method="post">
+        <form action="/view/BuyGood" method="post">
             <button type="submit" name="totalSum" value="${totalSum}"><fmt:message key="buyProduct" bundle="${bundle}"/></button>
         </form>
         <fmt:message key="totalSumProduct" bundle="${bundle}"/>: ${sessionScope.totalSum}
 </c:if>
+<div align="right">
+    <a href="/view/Exit"> <fmt:message key="signOut" bundle="${bundle}"/></a>
+</div>
 <a href="/view/Welcome.jsp"><fmt:message key="goMainPage" bundle="${bundle}"/></a>
 </body>
 </html>
