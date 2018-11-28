@@ -4,6 +4,7 @@ import dao.CategoryDAO;
 import dao.ColorDAO;
 import dao.SizeDAO;
 import entity.Good;
+import exeption.ConnectionExecption;
 import factory.Action;
 import dao.GoodsDAO;
 
@@ -24,7 +25,6 @@ public class AddGoodAction implements Action {
     private String MESSAGE;
     private GoodsDAO goodsDAO = new GoodsDAO();
     private Good good = new Good();
-    private boolean flag;
     private ColorDAO colorDAO = new ColorDAO();
     private SizeDAO sizeDAO = new SizeDAO();
     private CategoryDAO categoryDAO = new CategoryDAO();
@@ -34,52 +34,34 @@ public class AddGoodAction implements Action {
         return parser;
     }
 
-    private boolean addGood(String nameGood, String descriptionGood, String priceGood) throws SQLException, InterruptedException {
-        if (Validator.checkFieldsOnIsEmpty(nameGood, descriptionGood, priceGood) && Validator.checkPrice(priceGood)) {
-            good.setProductName(nameGood);
-            good.setDescription(descriptionGood);
-            good.setProductPrice(parser(priceGood));
-            goodsDAO.addAlbum(good);
-            flag = true;
-        } else {
-            flag = false;
-        }
-        return flag;
+    private void addGood(String nameGood, String descriptionGood, String priceGood) throws SQLException, ConnectionExecption {
+        good.setProductName(nameGood);
+        good.setDescription(descriptionGood);
+        good.setProductPrice(parser(priceGood));
+        goodsDAO.addAlbum(good);
     }
 
-    private boolean addGood(String nameGood, String albumId, String descriptionGood, String priceGood) throws SQLException {
-        if (Validator.checkFieldsOnIsEmpty(nameGood, albumId, descriptionGood, priceGood) && Validator.checkPrice(priceGood)) {
-            good.setProductName(nameGood);
-            good.setParentId(parser(albumId));
-            good.setDescription(descriptionGood);
-            good.setProductPrice(parser(priceGood));
-            goodsDAO.addMusic(good);
-            flag = true;
-        } else {
-            flag = false;
-        }
-        return flag;
+    private void addGood(String nameGood, String albumId, String descriptionGood, String priceGood) throws SQLException, ConnectionExecption {
+        good.setProductName(nameGood);
+        good.setParentId(parser(albumId));
+        good.setDescription(descriptionGood);
+        good.setProductPrice(parser(priceGood));
+        goodsDAO.addMusic(good);
     }
 
-    private boolean addGood(String nameGood, String categoryId, String descriptionGood, String priceGood, String sizeId, String colorId) throws SQLException {
-        if (Validator.checkFieldsOnIsEmpty(nameGood, categoryId, descriptionGood, priceGood, sizeId, colorId) && Validator.checkPrice(priceGood)) {
-            good.setProductName(nameGood);
-            good.setCategoryId(parser(categoryId));
-            good.setDescription(descriptionGood);
-            good.setProductPrice(parser(priceGood));
-            good.setSizeId(parser(sizeId));
-            good.setColorId(parser(colorId));
-            goodsDAO.addClothes(good);
-            flag = true;
-        } else {
-            flag = false;
-        }
-        return flag;
+    private void addGood(String nameGood, String categoryId, String descriptionGood, String priceGood, String sizeId, String colorId) throws SQLException, ConnectionExecption {
+        good.setProductName(nameGood);
+        good.setCategoryId(parser(categoryId));
+        good.setDescription(descriptionGood);
+        good.setProductPrice(parser(priceGood));
+        good.setSizeId(parser(sizeId));
+        good.setColorId(parser(colorId));
+        goodsDAO.addClothes(good);
     }
 
 
     @Override
-    public String execute(HttpServletRequest request) throws SQLException, InterruptedException {
+    public String execute(HttpServletRequest request) throws SQLException, ConnectionExecption {
         HttpSession httpSession = request.getSession();
         ServletContext servletContext = request.getServletContext();
         String nameBundle = Validator.getNameBundle((String) httpSession.getAttribute(LOCAL));
@@ -91,21 +73,23 @@ public class AddGoodAction implements Action {
         int languageId = (int) servletContext.getAttribute(LANGUAGE_ID);
         switch (keyProduct) {
             case ALBUM:
-                if (addGood(productName, discription, price)) {
+                if (Validator.checkFieldsOnIsEmpty(productName, discription, price) && Validator.checkPrice(price)) {
+                    addGood(productName, discription, price);
                     MESSAGE = resourceBundle.getString("saveProduct");
                     logger.info("Album : " + productName + " add successfully");
                 } else {
-                    MESSAGE = resourceBundle.getString("uncorrectData");
+                    MESSAGE = resourceBundle.getString("incorrectData");
                     logger.info("Album : " + productName + " not add");
                 }
                 break;
             case MUSIC:
                 String albumId = request.getParameter(ALBUM_ID);
-                if (addGood(productName, albumId, discription, price)) {
+                if (Validator.checkFieldsOnIsEmpty(productName, albumId, discription, price) && Validator.checkPrice(price)) {
+                    addGood(productName, albumId, discription, price);
                     MESSAGE = resourceBundle.getString("saveProduct");
                     logger.info("Music : " + productName + " add successfully");
                 } else {
-                    MESSAGE = resourceBundle.getString("uncorrectData");
+                    MESSAGE = resourceBundle.getString("incorrectData");
                     logger.info("Music : " + productName + " not add");
                 }
                 break;
@@ -113,11 +97,12 @@ public class AddGoodAction implements Action {
                 String sizeId = request.getParameter(SIZE_ID);
                 String colorId = request.getParameter(COLOR_ID);
                 String categoryId = request.getParameter(CATEGORY_ID);
-                if (addGood(productName, categoryId, discription, price, sizeId, colorId)) {
+                if (Validator.checkFieldsOnIsEmpty(productName, categoryId, discription, price, sizeId, colorId) && Validator.checkPrice(price)) {
+                    addGood(productName, categoryId, discription, price, sizeId, colorId);
                     MESSAGE = resourceBundle.getString("saveProduct");
                     logger.info("Thing : " + productName + "add successfully");
                 } else {
-                    MESSAGE = resourceBundle.getString("uncorrectData");
+                    MESSAGE = resourceBundle.getString("incorrectData");
                     logger.info("Thing : " + productName + "not add");
                 }
                 break;
