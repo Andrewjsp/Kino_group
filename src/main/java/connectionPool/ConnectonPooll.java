@@ -1,17 +1,21 @@
 package connectionPool;
 
+import exeption.ConnectionExecption;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ResourceBundle;
-import java.util.Vector;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 public class ConnectonPooll {
-
-    private Vector<Connection> availableConns = new Vector<Connection>();
-    private Vector<Connection> usedConns = new Vector<Connection>();
+    private Logger logger = LogManager.getRootLogger();
+    private BlockingQueue<Connection> blockingQueue = new ArrayBlockingQueue<>(100);
     private static ConnectonPooll ourInstance = new ConnectonPooll(15);
-    private ResourceBundle resourseBundle= ResourceBundle.getBundle("db");
+    private ResourceBundle resourseBundle = ResourceBundle.getBundle("db");
+
     public static ConnectonPooll getInstance() {
         return ourInstance;
     }
@@ -23,39 +27,46 @@ public class ConnectonPooll {
             e.printStackTrace();
         }
         for (int i = 0; i < initConnCnt; i++) {
-            availableConns.addElement(getConnection());
+            try {
+                blockingQueue.put(getConnection());
+            } catch (InterruptedException e) {
+                logger.info(e);
+            }
         }
     }
 
     private Connection getConnection() {
         Connection conn = null;
         try {
-            conn = DriverManager.getConnection(resourseBundle.getString("url"),resourseBundle.getString("login"),resourseBundle.getString("password"));
+            conn = DriverManager.getConnection(resourseBundle.getString("url"), resourseBundle.getString("login"), resourseBundle.getString("password"));
         } catch (Exception e) {
-            e.printStackTrace();
+           logger.info(e);
         }
         return conn;
     }
 
-    public synchronized Connection retrieve() {
-        Connection newConn = null;
-        if (availableConns.size() == 0) {
-            newConn = getConnection();
-        } else {
-            newConn = (Connection) availableConns.lastElement();
-            availableConns.removeElement(newConn);
+    public Connection retrieve() {
+        Connection connection = null;
+        try {
+            connection = blockingQueue.take();
+        } catch (InterruptedException e) {
+            logger.info(e);
         }
-        usedConns.addElement(newConn);
-        return newConn;
+        return connection;
     }
 
-    public synchronized void putback(Connection c){
-        if (c != null) {
-            if (usedConns.removeElement(c)) {
-                availableConns.addElement(c);
-            } else {
-                throw new NullPointerException("Connection not in the usedConns array");
+    public void putback(Connection connection) throws ConnectionExecption {
+        if (connection != null) {
+            try {
+                blockingQueue.put(connection);
+            } catch (InterruptedException e) {
+                logger.info(e);
             }
+        } else {
+            throw new ConnectionExecption();
         }
     }
+
+
 }
+
