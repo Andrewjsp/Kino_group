@@ -5,6 +5,9 @@ import entity.Category;
 import entity.Language;
 import dao.CategoryDAO;
 import dao.LanguageDAO;
+import exeption.ConnectionExecption;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -15,7 +18,7 @@ import java.util.List;
 import static utill.KinoGroupConst.*;
 
 public class ContextListener implements ServletContextListener {
-
+    private Logger logger = LogManager.getRootLogger();
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
 
@@ -27,8 +30,8 @@ public class ContextListener implements ServletContextListener {
             servletContext.setAttribute(LANGUAGES, languageList);
             servletContext.setAttribute(LANGUAGE_ID, DEFAULT_LANGUAGE_ID);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException|ConnectionExecption e) {
+            logger.info(e);
         }
     }
 
