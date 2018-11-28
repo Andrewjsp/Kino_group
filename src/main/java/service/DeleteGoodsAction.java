@@ -3,6 +3,7 @@ package service;
 
 import dao.BasketDAO;
 import entity.Good;
+import exeption.ConnectionExecption;
 import factory.Action;
 import dao.GoodsDAO;
 import org.apache.logging.log4j.LogManager;
@@ -23,7 +24,7 @@ public class DeleteGoodsAction implements Action {
     private Good good;
     private BasketDAO basketDAO = new BasketDAO();
 
-    private boolean checkSubGoods(int goodId) throws SQLException {
+    private boolean checkSubGoods(int goodId)  {
         boolean flag = true;
         good = goodsDAO.checkAlbumIsEmpry(goodId);
         if (good.getProductName() == null) {
@@ -32,15 +33,14 @@ public class DeleteGoodsAction implements Action {
         return flag;
     }
 
-    private List<Good> deleteGood(int goodId) throws SQLException {
-        basketDAO.removeGoodForAdmin(goodId);
-        goodsDAO.deleteGood(goodId);
+    private List<Good> deleteGood(int goodId) throws SQLException, ConnectionExecption {
+      basketDAO.removeGoodAdmin(goodId);
         List<Good> goods = goodsDAO.showAllProducts();
         return goods;
     }
 
     @Override
-    public String execute(HttpServletRequest request) throws SQLException {
+    public String execute(HttpServletRequest request) throws SQLException, ConnectionExecption {
         HttpSession httpSession = request.getSession();
         String nameBundle = Validator.getNameBundle((String) httpSession.getAttribute(LOCAL));
         ResourceBundle resourceBundle = ResourceBundle.getBundle(nameBundle);

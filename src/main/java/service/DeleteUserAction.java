@@ -3,6 +3,7 @@ package service;
 
 import dao.BasketDAO;
 import entity.User;
+import exeption.ConnectionExecption;
 import factory.Action;
 import dao.UserDAO;
 import org.apache.logging.log4j.LogManager;
@@ -19,15 +20,14 @@ public class DeleteUserAction implements Action {
     private UserDAO userDAO = new UserDAO();
     private BasketDAO basketDAO=new BasketDAO();
 
-    private List<User> deleteUser(int userId) throws SQLException {
-        basketDAO.removeAllGoodsFromBasket(userId);
-        userDAO.deleteUser(userId);
+    private List<User> deleteUser(int userId) throws SQLException, ConnectionExecption {
+      basketDAO.removeGoodsIfUserDelete(userId);
         List<User> list = userDAO.showAllUsers();
         return list;
     }
 
     @Override
-    public String execute(HttpServletRequest request) throws SQLException,InterruptedException {
+    public String execute(HttpServletRequest request) throws SQLException, ConnectionExecption {
         int userId = Integer.parseInt(request.getParameter(USER_ID));
         request.setAttribute("showAllUsers", deleteUser(userId));
         logger.info("User id delete from data base : " + userId);
