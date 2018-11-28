@@ -3,6 +3,8 @@ package dao;
 
 import entity.Basket;
 import connectionPool.*;
+import entity.User;
+import exeption.ConnectionExecption;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,14 +20,14 @@ public class BasketDAO {
     private final String SHOW_ALL_GOODS_IN_BASKET = "SELECT order_id,good_id,good_name,good_price FROM basket WHERE user_id=?";
     private final String REMOVE_GOOD_FROM_BASKET = "DELETE basket FROM basket WHERE order_id=?";
     private final String REMOVE_ALL_GOODS_FROM_BASKET = "DELETE basket FROM basket WHERE user_id=?";
-    private final String REMOVE_GOOD_FOR_ADMIN= "DELETE basket FROM basket WHERE good_id=?";
+    private final String REMOVE_GOOD_FOR_ADMIN = "DELETE basket FROM basket WHERE good_id=?";
     private ConnectonPooll connectonPooll = ConnectonPooll.getInstance();
-    private Logger logger = LogManager.getRootLogger();
+    private UserDAO userDAO = new UserDAO();
+    private GoodsDAO goodsDAO = new GoodsDAO();
 
-    public void addGood(Basket basket, int userId) throws SQLException {
+    public void addGood(Basket basket, int userId) throws SQLException, ConnectionExecption {
         Connection connection = connectonPooll.retrieve();
-        try {
-            PreparedStatement statement = connection.prepareStatement(ADD_GOOD_IN_BASKET);
+        try (PreparedStatement statement = connection.prepareStatement(ADD_GOOD_IN_BASKET)) {
             statement.setInt(1, basket.getGoodId());
             statement.setString(2, basket.getGoodName());
             statement.setInt(3, basket.getGoodPrice());
@@ -36,11 +38,11 @@ public class BasketDAO {
         }
     }
 
-    public List<Basket> showAllGoodsInBasket(int userId) throws SQLException {
+    public List<Basket> showAllGoodsInBasket(int userId) throws SQLException, ConnectionExecption {
         Connection connection = connectonPooll.retrieve();
         List<Basket> list = new ArrayList();
-        try {
-            PreparedStatement statement = connection.prepareStatement(SHOW_ALL_GOODS_IN_BASKET);
+        try (PreparedStatement statement = connection.prepareStatement(SHOW_ALL_GOODS_IN_BASKET)) {
+
             statement.setInt(1, userId);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -57,18 +59,59 @@ public class BasketDAO {
         return list;
     }
 
-    public void removeGoodFromBasket(int orderId) throws SQLException {
-        UserDAO userDAO = new UserDAO();
+    public void buyProduct(int userBalance, int userId) throws ConnectionExecption, SQLException {
+        Connection connection = connectonPooll.retrieve();
+        connection.setAutoCommit(false);
+        try {
+            userDAO.updateUserBalance(userBalance, userId, connection);
+            removeAllGoodsFromBasket(userId,connection);
+            connection.commit();
+        } catch (SQLException e) {
+            connection.rollback();
+        } finally {
+            connection.setAutoCommit(true);
+            connectonPooll.putback(connection);
+        }
+    }
+
+    public void removeGoodAdmin(int goodId) throws SQLException, ConnectionExecption {
+        Connection connection = connectonPooll.retrieve();
+        try {
+            connection.setAutoCommit(false);
+            removeGoodForAdmin(goodId,connection);
+            goodsDAO.deleteGood(goodId,connection);
+            connection.commit();
+        } catch (SQLException | ConnectionExecption e) {
+            connection.rollback();
+        } finally {
+            connection.setAutoCommit(true);
+            connectonPooll.putback(connection);
+        }
+    }
+
+    public void removeGoodsIfUserDelete(int userId) throws SQLException, ConnectionExecption {
+        Connection connection = connectonPooll.retrieve();
+        try {
+            connection.setAutoCommit(false);
+            removeAllGoodsFromBasket(userId,connection);
+            userDAO.deleteUser(userId,connection);
+            connection.commit();
+        } catch (SQLException | ConnectionExecption e) {
+            connection.rollback();
+        } finally {
+            connection.setAutoCommit(true);
+            connectonPooll.putback(connection);
+        }
+    }
+    public void removeGoodFromBasket(int orderId) throws SQLException, ConnectionExecption {
         userDAO.statementMethod(REMOVE_GOOD_FROM_BASKET, orderId);
     }
 
-    public void removeAllGoodsFromBasket(int userId) throws SQLException {
-        UserDAO userDAO = new UserDAO();
-        userDAO.statementMethod(REMOVE_ALL_GOODS_FROM_BASKET, userId);
+    private void removeAllGoodsFromBasket(int userId,Connection connection) throws SQLException, ConnectionExecption {
+        userDAO.statementMethod(REMOVE_ALL_GOODS_FROM_BASKET, userId,connection);
     }
 
-public void removeGoodForAdmin(int goodId) throws SQLException {
-        UserDAO userDAO=new UserDAO();
-        userDAO.statementMethod(REMOVE_GOOD_FOR_ADMIN,goodId);
-}
+    private void removeGoodForAdmin(int goodId,Connection connection) throws SQLException, ConnectionExecption {
+        userDAO.statementMethod(REMOVE_GOOD_FOR_ADMIN, goodId,connection);
+    }
 }

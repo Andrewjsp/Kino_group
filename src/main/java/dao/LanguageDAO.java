@@ -2,6 +2,7 @@ package dao;
 
 import connectionPool.ConnectonPooll;
 import entity.Language;
+import exeption.ConnectionExecption;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,7 +16,7 @@ public class LanguageDAO {
     private final String SHOW_LOCALE_BY_ID = "SELECT language_locale FROM language WHERE language_id=?";
     private ConnectonPooll connectonPooll = ConnectonPooll.getInstance();
 
-    public List<Language> showAllLanguage() throws SQLException {
+    public List<Language> showAllLanguage() throws SQLException, ConnectionExecption {
         Connection connection = connectonPooll.retrieve();
         PreparedStatement statement = connection.prepareStatement(SHOW_ALL_LANGUAGE);
         ResultSet resultSet = statement.executeQuery();
@@ -30,11 +31,10 @@ public class LanguageDAO {
         return list;
     }
 
-    public String getLocale(int languageId) throws SQLException {
+    public String getLocale(int languageId) throws SQLException, ConnectionExecption {
         Connection connection = connectonPooll.retrieve();
         String locale = null;
-        try {
-            PreparedStatement statement = connection.prepareStatement(SHOW_LOCALE_BY_ID);
+        try (PreparedStatement statement = connection.prepareStatement(SHOW_LOCALE_BY_ID)) {
             statement.setInt(1, languageId);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {

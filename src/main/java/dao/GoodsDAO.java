@@ -2,6 +2,7 @@ package dao;
 
 import connectionPool.ConnectonPooll;
 import entity.Good;
+import exeption.ConnectionExecption;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GoodsDAO {
-   private ConnectonPooll connectonPooll = ConnectonPooll.getInstance();
+    private ConnectonPooll connectonPooll = ConnectonPooll.getInstance();
 
     final private int ALBUM_CATEGORY_ID = 1;
     final private String SHOW_CLOTHES_BY_CATEGORY = "SELECT goods.good_id,goods.good_name,goods.description,price,goods.category_id,color.color_name,size.size_name\n" +
@@ -25,16 +26,17 @@ public class GoodsDAO {
     final private String ADD_CLOTHES = "INSERT INTO goods(good_name,category_id,description,price,size_id,color_id)VALUES(?,?,?,?,?,?)";
     final private String CHECK_IS_EMPTY_ALBUM = "SELECT good2.good_name FROM goods AS good1,goods AS good2 WHERE good1.good_id=good2.parent_id AND good1.good_id=?";
 
-    public void deleteGood(int goodId) throws SQLException {
-        UserDAO userDAO = new UserDAO();
-        userDAO.statementMethod(DELETE_PRODUCT, goodId);
+    public void deleteGood(int goodId,Connection connection) throws SQLException{
+        try (PreparedStatement statement = connection.prepareStatement(DELETE_PRODUCT)) {
+            statement.setInt(1, goodId);
+            statement.execute();
+        }
     }
 
-    public List<Good> showAlbum() throws SQLException   {
+    public List<Good> showAlbum() throws SQLException, ConnectionExecption {
         Connection connection = connectonPooll.retrieve();
         List<Good> list;
-        try {
-            PreparedStatement statement = connection.prepareStatement(SHOW_ALBUMS);
+        try (PreparedStatement statement = connection.prepareStatement(SHOW_ALBUMS)) {
             ResultSet resultSet = statement.executeQuery();
             list = showGood(resultSet);
         } finally {
@@ -44,11 +46,10 @@ public class GoodsDAO {
         return list;
     }
 
-    public Good checkAlbumIsEmpry(int albumId) throws SQLException {
+    public Good checkAlbumIsEmpry(int albumId) {
         Connection connection = connectonPooll.retrieve();
         Good good = new Good();
-        try {
-            PreparedStatement statement = connection.prepareStatement(CHECK_IS_EMPTY_ALBUM);
+        try (PreparedStatement statement = connection.prepareStatement(CHECK_IS_EMPTY_ALBUM)) {
             statement.setInt(1, albumId);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -60,11 +61,10 @@ public class GoodsDAO {
 
     }
 
-    public List<Good> showMusicForId(int albumId) throws SQLException, InterruptedException {
+    public List<Good> showMusicForId(int albumId) throws SQLException, ConnectionExecption{
         Connection connection = connectonPooll.retrieve();
         List<Good> list;
-        try {
-            PreparedStatement statement = connection.prepareStatement(SHOW_MUSIC_FOR_ID_ALBUM);
+        try (PreparedStatement statement = connection.prepareStatement(SHOW_MUSIC_FOR_ID_ALBUM)) {
             statement.setInt(1, albumId);
             ResultSet resultSet = statement.executeQuery();
             list = showGood(resultSet);
@@ -87,11 +87,10 @@ public class GoodsDAO {
         return list;
     }
 
-    public List<Good> showClothesByCategory(int categoryId) throws SQLException, InterruptedException {
+    public List<Good> showClothesByCategory(int categoryId) throws SQLException, ConnectionExecption {
         Connection connection = connectonPooll.retrieve();
         List<Good> list = new ArrayList<>();
-        try {
-            PreparedStatement statement = connection.prepareStatement(SHOW_CLOTHES_BY_CATEGORY);
+        try (PreparedStatement statement = connection.prepareStatement(SHOW_CLOTHES_BY_CATEGORY)) {
             statement.setInt(1, categoryId);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -112,10 +111,9 @@ public class GoodsDAO {
         return list;
     }
 
-    public void addAlbum(Good good) throws SQLException, InterruptedException {
+    public void addAlbum(Good good) throws SQLException, ConnectionExecption {
         Connection connection = connectonPooll.retrieve();
-        try {
-            PreparedStatement statement = connection.prepareStatement(ADD_ALBUM);
+        try (PreparedStatement statement = connection.prepareStatement(ADD_ALBUM)) {
             statement.setString(1, good.getProductName());
             statement.setInt(2, ALBUM_CATEGORY_ID);
             statement.setString(3, good.getDescription());
@@ -127,11 +125,10 @@ public class GoodsDAO {
 
     }
 
-    public List<Good> showAllProducts() throws SQLException {
+    public List<Good> showAllProducts() throws SQLException, ConnectionExecption {
         Connection connecton = connectonPooll.retrieve();
         List<Good> list = new ArrayList<>();
-        try {
-            PreparedStatement statement = connecton.prepareStatement(SHOW_ALL_PRODUCTS);
+        try(  PreparedStatement statement = connecton.prepareStatement(SHOW_ALL_PRODUCTS)) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Good good = new Good();
@@ -148,10 +145,9 @@ public class GoodsDAO {
         return list;
     }
 
-    public void addClothes(Good good) throws SQLException {
+    public void addClothes(Good good) throws SQLException, ConnectionExecption {
         Connection connection = connectonPooll.retrieve();
-        try {
-            PreparedStatement statement = connection.prepareStatement(ADD_CLOTHES);
+        try( PreparedStatement statement = connection.prepareStatement(ADD_CLOTHES)) {
             statement.setString(1, good.getProductName());
             statement.setInt(2, good.getCategoryId());
             statement.setString(3, good.getDescription());
@@ -159,17 +155,15 @@ public class GoodsDAO {
             statement.setInt(5, good.getSizeId());
             statement.setInt(6, good.getColorId());
             statement.execute();
-            statement.close();
         } finally {
             connectonPooll.putback(connection);
         }
 
     }
 
-    public void addMusic(Good good) throws SQLException {
+    public void addMusic(Good good) throws SQLException, ConnectionExecption {
         Connection connection = connectonPooll.retrieve();
-        try {
-            PreparedStatement statement = connection.prepareStatement(ADD_MUSIC);
+        try( PreparedStatement statement = connection.prepareStatement(ADD_MUSIC)) {
             statement.setString(1, good.getProductName());
             statement.setInt(2, good.getParentId());
             statement.setString(3, good.getDescription());

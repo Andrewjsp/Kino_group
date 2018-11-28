@@ -2,6 +2,7 @@ package dao;
 
 import connectionPool.ConnectonPooll;
 import entity.User;
+import exeption.ConnectionExecption;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,36 +28,41 @@ public class UserDAO {
     private final String CHECK_USER_LOGIN_AND_PASSWORD = "SELECT user.user_login FROM user WHERE user.user_login=? AND user.user_password=?";
     private ConnectonPooll connectonPooll = ConnectonPooll.getInstance();
 
-    public void statementMethod(String query, int id) throws SQLException {
+    public void statementMethod(String query, int id) throws SQLException, ConnectionExecption {
         Connection connection = connectonPooll.retrieve();
-        try {
-            PreparedStatement statement = connection.prepareStatement(query);
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
             statement.execute();
         } finally {
-
             connectonPooll.putback(connection);
         }
     }
 
+    public void statementMethod(String query, int id,Connection connection) throws SQLException, ConnectionExecption {
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, id);
+            statement.execute();
+        } finally {
+            connectonPooll.putback(connection);
+        }
+    }
 
-    public void changeRoleToAdmin(int userId) throws SQLException {
+    public void changeRoleToAdmin(int userId) throws SQLException, ConnectionExecption {
         statementMethod(CHANGE_USER_ROLE_TO_ADMIN, userId);
     }
 
-    public void changeRoleToUser(int userId) throws SQLException {
+    public void changeRoleToUser(int userId) throws SQLException, ConnectionExecption {
         statementMethod(CHANGE_ADMIN_ROLE_TO_USER, userId);
     }
 
-    public void deleteUser(int userId) throws SQLException {
-        statementMethod(DELETE_USER_FOR_ID, userId);
+    public void deleteUser(int userId,Connection connection) throws SQLException, ConnectionExecption {
+        statementMethod(DELETE_USER_FOR_ID, userId,connection);
     }
 
-    public List<User> showAllUsers() throws SQLException {
+    public List<User> showAllUsers() throws SQLException, ConnectionExecption {
         Connection connection = connectonPooll.retrieve();
         List<User> list = new ArrayList();
-        try {
-            PreparedStatement statement = connection.prepareStatement(SHOW_ALL_USERS);
+        try (PreparedStatement statement = connection.prepareStatement(SHOW_ALL_USERS)) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 User user = new User();
@@ -73,11 +79,10 @@ public class UserDAO {
         return list;
     }
 
-    public User getAllInformAboutUser(String login) throws SQLException {
+    public User getAllInformAboutUser(String login) throws SQLException, ConnectionExecption {
         Connection connection = connectonPooll.retrieve();
         User user = new User();
-        try {
-            PreparedStatement statement = connection.prepareStatement(GET_ALL_INFORM_ABOUT_USER);
+        try (PreparedStatement statement = connection.prepareStatement(GET_ALL_INFORM_ABOUT_USER)) {
             statement.setString(1, login);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -94,11 +99,10 @@ public class UserDAO {
         return user;
     }
 
-    public User checkUserLogin(String login) throws SQLException {
+    public User checkUserLogin(String login) throws SQLException, ConnectionExecption {
         Connection connection = connectonPooll.retrieve();
         User user = new User();
-        try {
-            PreparedStatement statement = connection.prepareStatement(CHECK_USER_LOGIN);
+        try (PreparedStatement statement = connection.prepareStatement(CHECK_USER_LOGIN)) {
             statement.setString(1, login);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -111,11 +115,10 @@ public class UserDAO {
         return user;
     }
 
-    public User checkLoginAndPasswordUser(String login, String password) throws SQLException {
+    public User checkLoginAndPasswordUser(String login, String password) throws SQLException, ConnectionExecption {
         Connection connection = connectonPooll.retrieve();
         User user = new User();
-        try {
-            PreparedStatement statement = connection.prepareStatement(CHECK_USER_LOGIN_AND_PASSWORD);
+        try (PreparedStatement statement = connection.prepareStatement(CHECK_USER_LOGIN_AND_PASSWORD)) {
             statement.setString(1, login);
             statement.setString(2, password);
             ResultSet resultSet = statement.executeQuery();
@@ -129,10 +132,9 @@ public class UserDAO {
         return user;
     }
 
-    public void addUser(User user) throws SQLException {
+    public void addUser(User user) throws SQLException, ConnectionExecption {
         Connection connection = connectonPooll.retrieve();
-        try {
-            PreparedStatement statement = connection.prepareStatement(ADD_USER);
+        try (PreparedStatement statement = connection.prepareStatement(ADD_USER)) {
             statement.setString(1, user.getUserName());
             statement.setString(2, user.getUserLogin());
             statement.setString(3, user.getUserPassword());
@@ -145,11 +147,10 @@ public class UserDAO {
         }
     }
 
-    public int getUserBalance(int userId) throws SQLException {
+    public int getUserBalance(int userId) throws SQLException, ConnectionExecption {
         Connection connection = connectonPooll.retrieve();
         int userBalance = 0;
-        try {
-            PreparedStatement statement = connection.prepareStatement(GET_USER_BALANCE);
+        try (PreparedStatement statement = connection.prepareStatement(GET_USER_BALANCE)) {
             statement.setInt(1, userId);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -162,16 +163,11 @@ public class UserDAO {
         return userBalance;
     }
 
-    public void updateUserBalance(int newBalanceUser, int userId) throws SQLException {
-        Connection connection = connectonPooll.retrieve();
-        try {
-            PreparedStatement statement = connection.prepareStatement(UPDATE_USER_BALANCE);
+    public void updateUserBalance(int newBalanceUser, int userId,Connection connection) throws SQLException, ConnectionExecption {
+        try (PreparedStatement statement = connection.prepareStatement(UPDATE_USER_BALANCE)) {
             statement.setInt(1, newBalanceUser);
             statement.setInt(2, userId);
             statement.execute();
-        } finally {
-
-            connectonPooll.putback(connection);
         }
     }
 }

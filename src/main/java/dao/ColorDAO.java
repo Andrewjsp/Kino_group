@@ -2,6 +2,7 @@ package dao;
 
 import connectionPool.ConnectonPooll;
 import entity.Color;
+import exeption.ConnectionExecption;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,11 +15,10 @@ public class ColorDAO {
     ConnectonPooll connectonPooll = ConnectonPooll.getInstance();
     private final String SHOW_ALL_COLOR = "SELECT * FROM color";
 
-    public List<Color> showAllColor() throws SQLException {
+    public List<Color> showAllColor() throws SQLException, ConnectionExecption {
         Connection connection = connectonPooll.retrieve();
         List<Color> list = new ArrayList<>();
-        try {
-            PreparedStatement statement = connection.prepareStatement(SHOW_ALL_COLOR);
+        try(PreparedStatement statement = connection.prepareStatement(SHOW_ALL_COLOR)) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Color color = new Color();

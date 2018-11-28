@@ -2,6 +2,7 @@ package dao;
 
 import connectionPool.ConnectonPooll;
 import entity.Size;
+import exeption.ConnectionExecption;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,14 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SizeDAO {
-   private ConnectonPooll connectonPooll=ConnectonPooll.getInstance();
-    private final String SHOW_ALL_SIZE="SELECT * FROM size";
+    private ConnectonPooll connectonPooll = ConnectonPooll.getInstance();
+    private final String SHOW_ALL_SIZE = "SELECT * FROM size";
 
-    public List<Size> showAllSize() throws SQLException {
-        Connection connection=connectonPooll.retrieve();
-        List<Size>list=new ArrayList<>();
-        try {
-            PreparedStatement statement = connection.prepareStatement(SHOW_ALL_SIZE);
+    public List<Size> showAllSize() throws SQLException, ConnectionExecption {
+        Connection connection = connectonPooll.retrieve();
+        List<Size> list = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(SHOW_ALL_SIZE)) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Size size = new Size();
@@ -26,7 +26,7 @@ public class SizeDAO {
                 size.setSizeName(resultSet.getString(2));
                 list.add(size);
             }
-        }finally {
+        } finally {
 
             connectonPooll.putback(connection);
         }
