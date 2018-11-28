@@ -1,5 +1,6 @@
 package service;
 
+import exeption.ConnectionExecption;
 import factory.Action;
 import dao.GoodsDAO;
 
@@ -12,9 +13,9 @@ public class  ShowMusicAction implements Action {
     private GoodsDAO goodsDAO = new GoodsDAO();
 
     @Override
-    public String execute(HttpServletRequest request) throws SQLException, InterruptedException {
+    public String execute(HttpServletRequest request) throws SQLException, ConnectionExecption {
         int albumId = Integer.parseInt(request.getParameter(ALBUM_ID));
-        request.setAttribute("music", goodsDAO.showMusicForId(albumId));
+        request.setAttribute(MUSIC, goodsDAO.showMusicForId(albumId));
         return SHOW_MUSIC_JSP;
     }
 }

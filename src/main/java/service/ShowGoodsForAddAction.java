@@ -1,6 +1,7 @@
 package service;
 import dao.ColorDAO;
 import dao.SizeDAO;
+import exeption.ConnectionExecption;
 import factory.Action;
 import dao.CategoryDAO;
 import dao.GoodsDAO;
@@ -19,7 +20,7 @@ public class  ShowGoodsForAddAction implements Action {
 
 
     @Override
-    public String execute(HttpServletRequest request) throws SQLException, InterruptedException {
+    public String execute(HttpServletRequest request) throws SQLException,ConnectionExecption {
         ServletContext servletContext=request.getServletContext();
         int languageId= (int) servletContext.getAttribute(LANGUAGE_ID);
         request.setAttribute(ALBUM, goodsDAO.showAlbum());

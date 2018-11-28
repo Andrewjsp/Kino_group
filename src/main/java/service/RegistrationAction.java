@@ -54,7 +54,7 @@ public class RegistrationAction implements Action {
         String nameBundle = Validator.getNameBundle((String) httpSession.getAttribute(LOCAL));
         ResourceBundle resourceBundle = ResourceBundle.getBundle(nameBundle);
 
-        if (Validator.checkInformAboutUser(userLogin,userPassword,userName)&&Validator.checkLengthRegistrationFields(userLogin,userPassword)) {
+        if (Validator.checkInformAboutUser(userLogin,userPassword,userName)&&Validator.checkLengthRegistrationFields(userLogin,userPassword,userName)) {
             if (!checkUserLoginDataBase(userLogin)) {
                 registrationUser(userName, userLogin, userPassword);
                 httpSession.setAttribute(USER, getInform(userLogin));

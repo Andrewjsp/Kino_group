@@ -1,5 +1,6 @@
 package service;
 
+import exeption.ConnectionExecption;
 import factory.Action;
 import dao.UserDAO;
 import org.apache.logging.log4j.LogManager;
@@ -17,7 +18,7 @@ public class ChangeRoleAction implements Action {
     private String MESSAGE;
     private UserDAO userDAO = new UserDAO();
 
-    private void changeRole(int userId, int userRole) throws SQLException, InterruptedException {
+    private void changeRole(int userId, int userRole) throws SQLException, ConnectionExecption {
         switch (userRole) {
             case ADMIN_ROLE:
                 userDAO.changeRoleToUser(userId);
@@ -29,7 +30,8 @@ public class ChangeRoleAction implements Action {
     }
 
     @Override
-    public String execute(HttpServletRequest request) throws SQLException, InterruptedException {
+    public String execute(HttpServletRequest request) throws SQLException, ConnectionExecption {
+        String view;
         String access = request.getParameter(CHECKBOX_WITH_INDICATION_ACCESS);
         HttpSession httpSession = request.getSession();
         String nameBundle = Validator.getNameBundle((String) httpSession.getAttribute(LOCAL));
@@ -39,12 +41,13 @@ public class ChangeRoleAction implements Action {
         if (Validator.checkFieldsOnNull(access)) {
             changeRole(userId, role);
             logger.info("User role changed");
+            view = WELCOME_JSP;
         } else {
             MESSAGE = resourceBundle.getString("specifyRole");
             request.setAttribute("message", MESSAGE);
             logger.info("User role not changed,userId" + userId);
-
+            view = CHANGE_USER_ROLE_JSP;
         }
-        return WELCOME_JSP ;
+        return view;
     }
 }

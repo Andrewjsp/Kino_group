@@ -2,6 +2,7 @@ package service;
 
 import entity.Basket;
 import entity.User;
+import exeption.ConnectionExecption;
 import factory.Action;
 import dao.BasketDAO;
 
@@ -16,13 +17,12 @@ import static utill.KinoGroupConst.*;
 public class ShowGoodsForBasketAction implements Action {
     private BasketDAO basketDAO = new BasketDAO();
 
-    private List<Basket> showGoodsforBasket(int userId) throws SQLException{
+    private List<Basket> showGoodsforBasket(int userId) throws SQLException, ConnectionExecption {
         List<Basket> list = basketDAO.showAllGoodsInBasket(userId);
         return list;
     }
 
-    private int totalSummGoods(int userId) throws SQLException{
-        BasketDAO basketDAO = new BasketDAO();
+    private int totalSummGoods(int userId) throws SQLException, ConnectionExecption {
         List<Basket> list = basketDAO.showAllGoodsInBasket(userId);
         int totalSum = 0;
         for (Basket basket : list) {
@@ -32,18 +32,12 @@ public class ShowGoodsForBasketAction implements Action {
     }
 
     @Override
-    public String execute(HttpServletRequest request) throws SQLException {
+    public String execute(HttpServletRequest request) throws SQLException, ConnectionExecption {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute(USER);
-        String view;
-        if (Validator.checkFieldsOnNull(user)) {
-            int userId = user.getUserId();
-            session.setAttribute(PRODUCT_FOR_BASKET, showGoodsforBasket(userId));
-            session.setAttribute(TOTAL_SUM, totalSummGoods(userId));
-            view = SHOW_PRODUCTS_IN_BASKET_JSP;
-        } else {
-            view = AUTORISATION_JSP;
-        }
-        return view;
+        int userId = user.getUserId();
+        session.setAttribute(PRODUCT_FOR_BASKET, showGoodsforBasket(userId));
+        session.setAttribute(TOTAL_SUM, totalSummGoods(userId));
+        return SHOW_PRODUCTS_IN_BASKET_JSP;
     }
 }

@@ -2,6 +2,7 @@ package service;
 
 import entity.Basket;
 import entity.User;
+import exeption.ConnectionExecption;
 import factory.Action;
 import dao.BasketDAO;
 import org.apache.logging.log4j.LogManager;
@@ -18,13 +19,13 @@ import static utill.KinoGroupConst.*;
 public class DeleteGoodFromBasketAction implements Action {
     private Logger logger= LogManager.getRootLogger();
     private  BasketDAO basketDAO=new BasketDAO();
-private List<Basket> removeGoodForBasket(int userId,int orderId) throws SQLException {
+private List<Basket> removeGoodForBasket(int userId,int orderId) throws SQLException , ConnectionExecption {
     basketDAO.removeGoodFromBasket(orderId);
     List<Basket>list=basketDAO.showAllGoodsInBasket(userId);
     return list;
 }
     @Override
-    public String execute(HttpServletRequest request) throws SQLException {
+    public String execute(HttpServletRequest request) throws SQLException, ConnectionExecption {
         HttpSession session=request.getSession();
         User user= (User) session.getAttribute(USER);
         int orderId=Integer.parseInt(request.getParameter(ORDER_ID));

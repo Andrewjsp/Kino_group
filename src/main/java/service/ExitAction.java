@@ -2,6 +2,7 @@ package service;
 
 import dao.CategoryDAO;
 import entity.Category;
+import exeption.ConnectionExecption;
 import factory.Action;
 
 import javax.servlet.ServletContext;
@@ -17,7 +18,7 @@ import static utill.KinoGroupConst.WELCOME_JSP;
 
 public class  ExitAction implements Action {
     @Override
-    public String execute(HttpServletRequest request) throws SQLException, InterruptedException {
+    public String execute(HttpServletRequest request) throws SQLException, ConnectionExecption {
         ServletContext servletContext=request.getServletContext();
         HttpSession httpSession=request.getSession();
         httpSession.invalidate();

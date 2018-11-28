@@ -1,4 +1,5 @@
 package service;
+import exeption.ConnectionExecption;
 import factory.Action;
 import dao.GoodsDAO;
 
@@ -11,7 +12,7 @@ public class  ShowGoodsAction implements Action {
     private GoodsDAO goodsDAO = new GoodsDAO();
 
     @Override
-    public String execute(HttpServletRequest request) throws SQLException,InterruptedException {
+    public String execute(HttpServletRequest request) throws SQLException, ConnectionExecption {
         String view;
         int categoryId = Integer.parseInt(request.getParameter(CATEGORY_ID));
         if (categoryId == ALBUM_CATEGORY_ID) {
