@@ -3,6 +3,7 @@ package service;
 
 import encryption.Encryption;
 import entity.User;
+import exeption.ConnectionExecption;
 import factory.Action;
 import dao.UserDAO;
 
@@ -17,27 +18,24 @@ import static utill.KinoGroupConst.*;
 
 public class AutorizationAction implements Action {
     private String MESSAGE;
+    private  UserDAO userDAO = new UserDAO();
 
-    private User getAllInform(String login) throws SQLException {
-        UserDAO userDAO = new UserDAO();
+    private User getAllInform(String login) throws SQLException, ConnectionExecption {
         User user = userDAO.getAllInformAboutUser(login);
         return user;
     }
 
-    private boolean checkLoginAndPasswordUser(String login, String password) throws SQLException, NoSuchAlgorithmException {
+    private boolean checkLoginAndPasswordUser(String login, String password) throws SQLException, NoSuchAlgorithmException, ConnectionExecption {
         Encryption encryption = new Encryption();
-        boolean check = true;
         String hashPassword = encryption.getHashPassword(password);
-        UserDAO userDAO = new UserDAO();
+
         User user = userDAO.checkLoginAndPasswordUser(login, hashPassword);
-        if (user.getUserLogin() == null) {
-            check = false;
-        }
+        boolean check =Validator.checkFieldsOnNull(user.getUserLogin());
         return check;
     }
 
     @Override
-    public String execute(HttpServletRequest request) throws SQLException, NoSuchAlgorithmException {
+    public String execute(HttpServletRequest request) throws SQLException, NoSuchAlgorithmException, ConnectionExecption {
         String userLogin = request.getParameter(LOGIN);
         String userPassword = request.getParameter(PASSWORD);
         String view;
